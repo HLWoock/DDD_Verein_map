@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  verein:
+    image: hermannw/verein:0.1.0
+    container_name: verein
+    ports:
+      - "8081:8081"
+    networks:
+      - stattauto
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ main port
+      - "15672:15672" # RabbitMQ management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # Persisting RabbitMQ data
+    networks:
+      - stattauto
+  mariadb:
+    image: mariadb:10.8
+    container_name: mariadb
+    ports:
+      - '3306:3306'
+    environment:
+      MARIADB_ROOT_PASSWORD: admin
+      MARIADB_DATABASE: mitgliederverwaltung
+      MARIADB_USER: root
+      MARIADB_PASSWORD: admin
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - stattauto
+    restart: always
+volumes:
+  rabbitmq_data: # Define a named volume to persist RabbitMQ data
+    driver: local
+  mariadb_data:
+    driver: local
+networks:
+  stattauto:
+    driver: bridge
+      
